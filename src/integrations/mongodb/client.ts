@@ -14,6 +14,29 @@ export const connectToMongoDB = async () => {
   }
 };
 
+export const findQuestionsBySubject = async (subjectCode: string) => {
+  const db = await connectToMongoDB();
+  const questions = await db.collection('questions')
+    .find({ subject_code: subjectCode })
+    .toArray();
+  return questions;
+};
+
+export const insertQuestion = async (question: any) => {
+  const db = await connectToMongoDB();
+  const result = await db.collection('questions').insertOne(question);
+  return result;
+};
+
+export const updateQuestion = async (id: string, question: any) => {
+  const db = await connectToMongoDB();
+  const result = await db.collection('questions').updateOne(
+    { _id: new ObjectId(id) },
+    { $set: question }
+  );
+  return result;
+};
+
 export const deleteQuestion = async (id: string) => {
   const db = await connectToMongoDB();
   const result = await db.collection('questions').deleteOne({ _id: new ObjectId(id) });
