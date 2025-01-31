@@ -112,40 +112,58 @@ export type Database = {
       }
       questions: {
         Row: {
-          co_level: string
-          content: string
-          created_at: string | null
-          id: string
-          k_level: string
-          marks: number
-          part: string
-          subject_code: string | null
-          subject_name: string | null
-          user_id: string
+          co_level: string;
+          content: string;
+          created_at: string;
+          id: string;
+          k_level: string;
+          marks: number;
+          part: string;
+          subject_code: string;
+          subject_name: string;
+          user_id: string;
+          has_or?: boolean;
+          or_content?: string;
+          or_marks?: number;
+          or_k_level?: string;
+          or_part?: string;
+          or_co_level?: string;
         }
         Insert: {
-          co_level?: string
-          content: string
-          created_at?: string | null
-          id?: string
-          k_level: string
-          marks: number
-          part: string
-          subject_code?: string | null
-          subject_name?: string | null
-          user_id: string
+          co_level?: string;
+          content: string;
+          created_at?: string;
+          id?: string;
+          k_level: string;
+          marks: number;
+          part: string;
+          subject_code?: string;
+          subject_name?: string;
+          user_id: string;
+          has_or?: boolean;
+          or_content?: string;
+          or_marks?: number;
+          or_k_level?: string;
+          or_part?: string;
+          or_co_level?: string;
         }
         Update: {
-          co_level?: string
-          content?: string
-          created_at?: string | null
-          id?: string
-          k_level?: string
-          marks?: number
-          part?: string
-          subject_code?: string | null
-          subject_name?: string | null
-          user_id?: string
+          co_level?: string;
+          content?: string;
+          created_at?: string;
+          id?: string;
+          k_level?: string;
+          marks?: number;
+          part?: string;
+          subject_code?: string;
+          subject_name?: string;
+          user_id?: string;
+          has_or?: boolean;
+          or_content?: string;
+          or_marks?: number;
+          or_k_level?: string;
+          or_part?: string;
+          or_co_level?: string;
         }
         Relationships: [
           {

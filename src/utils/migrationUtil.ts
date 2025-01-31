@@ -21,12 +21,12 @@ export const migrateDataToMongoDB = async () => {
         co_level: question.co_level,
         subject_code: question.subject_code,
         subject_name: question.subject_name,
-        has_or: question.has_or,
-        or_content: question.or_content,
-        or_marks: question.or_marks,
-        or_k_level: question.or_k_level,
-        or_part: question.or_part,
-        or_co_level: question.or_co_level
+        has_or: question.has_or || false,
+        or_content: question.or_content || null,
+        or_marks: question.or_marks || null,
+        or_k_level: question.or_k_level || null,
+        or_part: question.or_part || null,
+        or_co_level: question.or_co_level || null
       };
 
       await insertQuestion(questionData);
