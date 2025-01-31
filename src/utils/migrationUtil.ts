@@ -26,9 +26,9 @@ export const migrateDataToMongoDB = async () => {
       or_co_level: question.or_co_level || '',
     }));
 
-    // Insert into MongoDB
-    const result = await insertQuestions(transformedQuestions);
-    return { count: result.insertedCount };
+    // Insert into MongoDB and get array of results
+    const results = await insertQuestions(transformedQuestions);
+    return { count: results.length }; // Return the count of successfully inserted documents
   } catch (error) {
     console.error('Migration error:', error);
     throw error;
