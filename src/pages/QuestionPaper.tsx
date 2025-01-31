@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { BasicInfoForm } from "@/components/question-paper/BasicInfoForm";
 import { QuestionForm } from "@/components/question-paper/QuestionForm";
-import { supabase } from "@/integrations/supabase/client";
-import { generateQuestionPaperDoc } from "@/utils/docGenerator";
 import { PreviewSection } from "@/components/question-paper/PreviewSection";
 import { selectRandomQuestions } from "@/utils/questionSelection";
 import { FormData } from "@/types/form";
 import { TopicQuestion, QuestionFromDB, MappedQuestion, mapDBQuestionToTopicQuestion } from "@/types/question";
+import { generateQuestionPaperDoc } from "@/utils/docGenerator";
+import { findQuestionsBySubject } from "@/integrations/mongodb/client";
 
 const QuestionPaper = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -29,12 +29,12 @@ const QuestionPaper = () => {
 
   const addNewQuestion = () => {
     const newQuestion: TopicQuestion = {
-      id: Date.now(),
+      id: String(Date.now()), // Convert to string
       part: "",
       marks: "",
       kLevel: "",
       coLevel: "",
-      hasOr: "false", // Initialize hasOr as false
+      hasOr: "false",
       orContent: "",
       orMarks: "",
       orKLevel: "",
@@ -44,7 +44,7 @@ const QuestionPaper = () => {
     setTopicQuestions([...topicQuestions, newQuestion]);
   };
 
-  const updateQuestion = (id: number, field: keyof TopicQuestion, value: string) => {
+  const updateQuestion = (id: string, field: string, value: string) => {
     setTopicQuestions(questions =>
       questions.map(q =>
         q.id === id ? { ...q, [field]: value } : q
@@ -52,7 +52,7 @@ const QuestionPaper = () => {
     );
   };
 
-  const deleteQuestion = (id: number) => {
+  const deleteQuestion = (id: string) => {
     setTopicQuestions(questions => questions.filter(q => q.id !== id));
   };
 
@@ -81,20 +81,7 @@ const QuestionPaper = () => {
       console.log('Form data:', formData);
       console.log('Topic questions:', topicQuestions);
 
-      // First fetch all questions for the subject
-      const { data: questions, error } = await supabase
-        .from('questions')
-        .select('*')
-        .match({
-          subject_code: formData.subject_code,
-          subject_name: formData.subject_name
-        });
-
-      if (error) {
-        console.error('Database error:', error);
-        toast.error("Failed to fetch questions");
-        return;
-      }
+      const questions = await findQuestionsBySubject(formData.subject_code);
 
       if (!questions || questions.length === 0) {
         toast.error("No questions found for this subject");
@@ -103,7 +90,6 @@ const QuestionPaper = () => {
 
       console.log('Available questions from DB:', questions);
 
-      // Try to select questions based on requirements
       const selected = selectRandomQuestions(questions as QuestionFromDB[], topicQuestions);
       console.log('Selected questions:', selected);
       
@@ -121,7 +107,6 @@ const QuestionPaper = () => {
         return;
       }
 
-      // Map selected questions and ensure OR questions are properly handled
       const mappedQuestions = selected.map((q, index) => {
         console.log(`Mapping question ${index}:`, q);
         const mapped = mapDBQuestionToTopicQuestion(q);
@@ -143,36 +128,18 @@ const QuestionPaper = () => {
     if (!validateForm()) return;
     
     try {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id')
-        .limit(1);
-
-      if (!profiles || profiles.length === 0) {
-        toast.error("No default profile found");
-        return;
-      }
-
-      const defaultUserId = profiles[0].id;
-
-      // Create a paper for each department
-      for (const dept of formData.department) {
-        const { error: paperError } = await supabase
-          .from('question_papers')
-          .insert({
-            title: `${formData.subject_code} - ${formData.subject_name}`,
-            department: dept,
-            course_code: formData.subject_code,
-            course_name: formData.subject_name,
-            year: formData.year[0], // Use first year from array
-            user_id: defaultUserId
-          });
-
-        if (paperError) throw paperError;
-      }
-
-      const doc = generateQuestionPaperDoc(formData, selectedQuestions);
-      doc.save(`${formData.subject_code}_question_paper.docx`);
+      const doc = await generateQuestionPaperDoc(formData, selectedQuestions);
+      // Create a Blob from the Buffer
+      const blob = new Blob([doc], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${formData.subject_code}_question_paper.docx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
       toast.success("Question paper generated successfully!");
     } catch (error) {
       console.error('Error generating paper:', error);

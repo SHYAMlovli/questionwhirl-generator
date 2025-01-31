@@ -1,55 +1,42 @@
-import { MongoClient, ObjectId } from 'mongodb';
-
-const uri = process.env.MONGODB_URI || "mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority";
-
-export const mongoClient = new MongoClient(uri);
-
-export const connectDB = async () => {
-  try {
-    await mongoClient.connect();
-    console.log("Connected to MongoDB!");
-    return mongoClient.db("question_bank");
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-    throw error;
-  }
-};
-
-export const questionsCollection = async () => {
-  const db = await connectDB();
-  return db.collection('questions');
-};
-
-export const profilesCollection = async () => {
-  const db = await connectDB();
-  return db.collection('profiles');
-};
+// Instead of direct MongoDB connection, we'll use fetch API
+const API_URL = 'https://your-backend-url/api'; // Replace with your actual backend URL
 
 export const insertQuestion = async (questionData: any) => {
-  const collection = await questionsCollection();
-  const result = await collection.insertOne(questionData);
-  return { ...questionData, _id: result.insertedId };
+  const response = await fetch(`${API_URL}/questions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(questionData),
+  });
+  return response.json();
 };
 
 export const updateQuestion = async (id: string, questionData: any) => {
-  const collection = await questionsCollection();
-  return collection.updateOne(
-    { _id: new ObjectId(id) },
-    { $set: questionData }
-  );
+  const response = await fetch(`${API_URL}/questions/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(questionData),
+  });
+  return response.json();
 };
 
 export const deleteQuestion = async (id: string) => {
-  const collection = await questionsCollection();
-  return collection.deleteOne({ _id: new ObjectId(id) });
+  const response = await fetch(`${API_URL}/questions/${id}`, {
+    method: 'DELETE',
+  });
+  return response.json();
 };
 
 export const findQuestions = async (query = {}) => {
-  const collection = await questionsCollection();
-  return collection.find(query).toArray();
+  const queryString = new URLSearchParams(query as Record<string, string>).toString();
+  const response = await fetch(`${API_URL}/questions?${queryString}`);
+  return response.json();
 };
 
 export const findQuestionsBySubject = async (subjectCode: string) => {
-  const collection = await questionsCollection();
-  return collection.find({ subject_code: subjectCode }).toArray();
+  const response = await fetch(`${API_URL}/questions/subject/${subjectCode}`);
+  return response.json();
 };
