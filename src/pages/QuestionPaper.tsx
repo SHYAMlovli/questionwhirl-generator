@@ -81,16 +81,36 @@ const QuestionPaper = () => {
       console.log('Form data:', formData);
       console.log('Topic questions:', topicQuestions);
 
-      const questions = await findQuestionsBySubject(formData.subject_code);
+      const questionsFromDB = await findQuestionsBySubject(formData.subject_code);
 
-      if (!questions || questions.length === 0) {
+      if (!questionsFromDB || questionsFromDB.length === 0) {
         toast.error("No questions found for this subject");
         return;
       }
 
-      console.log('Available questions from DB:', questions);
+      console.log('Available questions from DB:', questionsFromDB);
 
-      const selected = selectRandomQuestions(questions as QuestionFromDB[], topicQuestions);
+      // Type assertion to convert MongoDB documents to QuestionFromDB
+      const questions = questionsFromDB.map(doc => ({
+        id: doc._id.toString(),
+        user_id: doc.user_id,
+        content: doc.content,
+        marks: doc.marks,
+        k_level: doc.k_level,
+        part: doc.part,
+        co_level: doc.co_level,
+        created_at: doc.created_at,
+        subject_code: doc.subject_code,
+        subject_name: doc.subject_name,
+        has_or: doc.has_or,
+        or_content: doc.or_content,
+        or_marks: doc.or_marks,
+        or_k_level: doc.or_k_level,
+        or_part: doc.or_part,
+        or_co_level: doc.or_co_level
+      })) as QuestionFromDB[];
+
+      const selected = selectRandomQuestions(questions, topicQuestions);
       console.log('Selected questions:', selected);
       
       if (!selected || selected.length === 0) {

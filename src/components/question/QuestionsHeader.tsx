@@ -11,8 +11,14 @@ interface QuestionsHeaderProps {
   onSelectSubject: (subject: { code: string; name: string }) => void;
 }
 
+interface Subject {
+  code: string;
+  name: string;
+  count: number;
+}
+
 export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHeaderProps) => {
-  const { data: questions, refetch } = useQuery({
+  const { data: questions } = useQuery({
     queryKey: ['questions'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -33,7 +39,7 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
     }
   };
 
-  // Group questions by subject
+  // Group questions by subject with proper typing
   const subjects = questions?.reduce((acc, question) => {
     if (question.subject_code && question.subject_name) {
       const key = `${question.subject_code}-${question.subject_name}`;
@@ -47,7 +53,7 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
       acc[key].count++;
     }
     return acc;
-  }, {} as Record<string, { code: string; name: string; count: number }>);
+  }, {} as Record<string, Subject>);
 
   return (
     <>
