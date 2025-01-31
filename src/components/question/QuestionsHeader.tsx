@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SubjectCard } from "./SubjectCard";
 import { migrateDataToMongoDB } from "@/utils/migrationUtil";
 import { toast } from "sonner";
+import { QuestionFromDB } from "@/types/question";
 
 interface QuestionsHeaderProps {
   onAddSubject: () => void;
@@ -18,7 +19,7 @@ interface Subject {
 }
 
 export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHeaderProps) => {
-  const { data: questions } = useQuery({
+  const { data: questions } = useQuery<QuestionFromDB[]>({
     queryKey: ['questions'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -40,7 +41,7 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
   };
 
   // Group questions by subject with proper typing
-  const subjects = questions?.reduce((acc, question) => {
+  const subjects = questions?.reduce<Record<string, Subject>>((acc, question) => {
     if (question.subject_code && question.subject_name) {
       const key = `${question.subject_code}-${question.subject_name}`;
       if (!acc[key]) {
@@ -53,7 +54,7 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
       acc[key].count++;
     }
     return acc;
-  }, {} as Record<string, Subject>);
+  }, {});
 
   return (
     <>
