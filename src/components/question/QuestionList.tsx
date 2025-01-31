@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { deleteQuestion } from "@/integrations/mongodb/client";
 import { toast } from "sonner";
 
 interface Question {
@@ -40,17 +40,11 @@ export const QuestionList = ({
 }: QuestionListProps) => {
   const queryClient = useQueryClient();
 
-  const deleteQuestion = useMutation({
+  const deleteQuestionMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('questions')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
+      await deleteQuestion(id);
     },
     onSuccess: (_, id) => {
-      // Invalidate both general and specific queries
       queryClient.invalidateQueries({ queryKey: ['questions'] });
       const deletedQuestion = questions?.find(q => q.id === id);
       if (deletedQuestion?.subject_code) {
@@ -140,7 +134,7 @@ export const QuestionList = ({
                       size="icon"
                       onClick={() => {
                         if (window.confirm('Are you sure you want to delete this question?')) {
-                          deleteQuestion.mutate(question.id);
+                          deleteQuestionMutation.mutate(question.id);
                         }
                       }}
                     >

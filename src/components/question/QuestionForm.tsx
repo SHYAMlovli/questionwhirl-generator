@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { FormFields } from "./FormFields";
 import { useQueryClient } from "@tanstack/react-query";
+import { insertQuestion, updateQuestion } from "@/integrations/mongodb/client";
 
 interface QuestionFormProps {
   initialData?: {
@@ -47,56 +47,29 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
     setIsSubmitting(true);
 
     try {
-      // Get the current user's ID
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error("You must be logged in to save questions");
-        return;
-      }
+      const questionData = {
+        content,
+        marks: parseInt(mark),
+        k_level: kLevel,
+        part,
+        co_level: coLevel,
+        subject_code: initialData?.subject_code,
+        subject_name: initialData?.subject_name,
+        has_or: hasOr,
+        or_content: hasOr ? orContent : null,
+        or_marks: hasOr && orMark ? parseInt(orMark) : null,
+        or_k_level: hasOr ? orKLevel : null,
+        or_part: hasOr ? orPart : null,
+        or_co_level: hasOr ? orCoLevel : null
+      };
 
       if (initialData?.id) {
         // Update existing question
-        const { error } = await supabase
-          .from("questions")
-          .update({
-            content,
-            marks: parseInt(mark),
-            k_level: kLevel,
-            part,
-            co_level: coLevel,
-            subject_code: initialData.subject_code,
-            subject_name: initialData.subject_name,
-          })
-          .eq("id", initialData.id);
-
-        if (error) throw error;
+        await updateQuestion(initialData.id, questionData);
         toast.success("Question updated successfully");
       } else {
         // Create new question
-        const { error } = await supabase
-          .from("questions")
-          .insert({
-            content,
-            marks: parseInt(mark),
-            k_level: kLevel,
-            part,
-            co_level: coLevel,
-            user_id: user.id,
-            subject_code: initialData?.subject_code,
-            subject_name: initialData?.subject_name,
-            has_or: hasOr,
-            or_content: hasOr ? orContent : null,
-            or_marks: hasOr && orMark ? parseInt(orMark) : null,
-            or_k_level: hasOr ? orKLevel : null,
-            or_part: hasOr ? orPart : null,
-            or_co_level: hasOr ? orCoLevel : null
-          });
-
-        if (error) {
-          console.error('Error saving question:', error);
-          throw error;
-        }
+        await insertQuestion(questionData);
         toast.success("Question added successfully");
       }
 
