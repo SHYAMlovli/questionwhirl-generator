@@ -1,14 +1,8 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
-const uri = "mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.MONGODB_URI || "mongodb+srv://<username>:<password>@cluster0.mongodb.net/?retryWrites=true&w=majority";
 
-export const mongoClient = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
-});
+export const mongoClient = new MongoClient(uri);
 
 export const connectDB = async () => {
   try {
@@ -21,7 +15,6 @@ export const connectDB = async () => {
   }
 };
 
-// Helper functions to replace Supabase queries
 export const questionsCollection = async () => {
   const db = await connectDB();
   return db.collection('questions');
@@ -34,17 +27,21 @@ export const profilesCollection = async () => {
 
 export const insertQuestion = async (questionData: any) => {
   const collection = await questionsCollection();
-  return collection.insertOne(questionData);
+  const result = await collection.insertOne(questionData);
+  return { ...questionData, _id: result.insertedId };
 };
 
 export const updateQuestion = async (id: string, questionData: any) => {
   const collection = await questionsCollection();
-  return collection.updateOne({ _id: id }, { $set: questionData });
+  return collection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: questionData }
+  );
 };
 
 export const deleteQuestion = async (id: string) => {
   const collection = await questionsCollection();
-  return collection.deleteOne({ _id: id });
+  return collection.deleteOne({ _id: new ObjectId(id) });
 };
 
 export const findQuestions = async (query = {}) => {

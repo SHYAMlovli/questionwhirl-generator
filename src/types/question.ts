@@ -1,5 +1,5 @@
 export interface TopicQuestion {
-  id: number;
+  id: string;
   content?: string;
   marks?: string;
   kLevel?: string;

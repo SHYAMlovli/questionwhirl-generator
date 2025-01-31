@@ -19,15 +19,12 @@ export const QuestionForm = ({
   const handleOrChange = (checked: CheckedState) => {
     updateQuestion(question.id, "hasOr", checked ? "true" : "false");
     if (!checked) {
-      // Clear OR fields when disabled
       updateQuestion(question.id, "orMarks", "");
       updateQuestion(question.id, "orKLevel", "");
       updateQuestion(question.id, "orPart", "");
       updateQuestion(question.id, "orCoLevel", "");
     }
   };
-
-  console.log("Question hasOr:", question.hasOr); // Add logging
 
   return (
     <div className="space-y-4 p-4 border rounded-lg">
@@ -40,6 +37,8 @@ export const QuestionForm = ({
 
       <div className="space-y-6">
         <FormFields
+          content={question.content || ""}
+          setContent={(value) => updateQuestion(question.id, "content", value)}
           mark={question.marks || ""}
           setMark={(value) => updateQuestion(question.id, "marks", value)}
           kLevel={question.kLevel || ""}
@@ -50,6 +49,8 @@ export const QuestionForm = ({
           setCoLevel={(value) => updateQuestion(question.id, "coLevel", value)}
           hasOr={question.hasOr === "true"}
           setHasOr={handleOrChange}
+          orContent={question.orContent || ""}
+          setOrContent={(value) => updateQuestion(question.id, "orContent", value)}
           orMark={question.orMarks || ""}
           setOrMark={(value) => updateQuestion(question.id, "orMarks", value)}
           orKLevel={question.orKLevel || ""}
