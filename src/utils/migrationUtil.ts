@@ -1,38 +1,34 @@
-import { supabase } from "@/integrations/supabase/client";
-import { insertQuestion } from "@/integrations/mongodb/client";
+import { supabase } from '@/integrations/supabase/client';
+import { insertQuestions } from '@/integrations/mongodb/client';
 
 export const migrateDataToMongoDB = async () => {
   try {
     // Fetch all questions from Supabase
-    const { data: supabaseQuestions, error } = await supabase
+    const { data: questions, error } = await supabase
       .from('questions')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
 
     if (error) throw error;
 
-    // Insert each question into MongoDB
-    for (const question of supabaseQuestions || []) {
-      const questionData = {
-        content: question.content,
-        marks: question.marks,
-        k_level: question.k_level,
-        part: question.part,
-        co_level: question.co_level,
-        subject_code: question.subject_code,
-        subject_name: question.subject_name,
-        has_or: question.has_or || false,
-        or_content: question.or_content || null,
-        or_marks: question.or_marks || null,
-        or_k_level: question.or_k_level || null,
-        or_part: question.or_part || null,
-        or_co_level: question.or_co_level || null
-      };
-
-      await insertQuestion(questionData);
+    if (!questions || questions.length === 0) {
+      return { count: 0 };
     }
 
-    return { success: true, count: supabaseQuestions?.length || 0 };
+    // Transform the data if needed
+    const transformedQuestions = questions.map(question => ({
+      ...question,
+      _id: question.id, // Map Supabase ID to MongoDB _id
+      has_or: question.has_or || false,
+      or_content: question.or_content || '',
+      or_marks: question.or_marks || 0,
+      or_k_level: question.or_k_level || '',
+      or_part: question.or_part || '',
+      or_co_level: question.or_co_level || '',
+    }));
+
+    // Insert into MongoDB
+    const result = await insertQuestions(transformedQuestions);
+    return { count: result.insertedCount };
   } catch (error) {
     console.error('Migration error:', error);
     throw error;

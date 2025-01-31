@@ -1,55 +1,27 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import { MongoClient, ObjectId } from 'mongodb';
 
-export const findQuestions = async () => {
-  const response = await fetch(`${API_URL}/questions`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch questions');
-  }
-  return response.json();
-};
+const uri = import.meta.env.VITE_MONGODB_URI || 'mongodb://localhost:27017';
+const client = new MongoClient(uri);
 
-export const findQuestionsBySubject = async (subjectCode: string) => {
-  const response = await fetch(`${API_URL}/questions/subject/${subjectCode}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch questions');
+export const connectToMongoDB = async () => {
+  try {
+    await client.connect();
+    console.log('Connected to MongoDB');
+    return client.db('question_bank');
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    throw error;
   }
-  return response.json();
-};
-
-export const insertQuestion = async (questionData: any) => {
-  const response = await fetch(`${API_URL}/questions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(questionData),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to insert question');
-  }
-  return response.json();
-};
-
-export const updateQuestion = async (id: string, questionData: any) => {
-  const response = await fetch(`${API_URL}/questions/${id}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(questionData),
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update question');
-  }
-  return response.json();
 };
 
 export const deleteQuestion = async (id: string) => {
-  const response = await fetch(`${API_URL}/questions/${id}`, {
-    method: 'DELETE',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to delete question');
-  }
-  return response.json();
+  const db = await connectToMongoDB();
+  const result = await db.collection('questions').deleteOne({ _id: new ObjectId(id) });
+  return result;
+};
+
+export const insertQuestions = async (questions: any[]) => {
+  const db = await connectToMongoDB();
+  const result = await db.collection('questions').insertMany(questions);
+  return result;
 };
