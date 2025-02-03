@@ -34,14 +34,14 @@ export const LoginForm = () => {
     }
 
     try {
-      // First check if user exists by trying to sign in
+      // Try to sign in first
       const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) {
-        // Only try to sign up if the error indicates the user doesn't exist
+        // If sign in fails with invalid credentials and user is allowed, try to sign up
         if (signInError.message.includes("Invalid login credentials")) {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
@@ -54,17 +54,17 @@ export const LoginForm = () => {
           });
 
           if (signUpError) {
-            // If sign up fails because user exists, show appropriate message
             if (signUpError.message.includes("User already registered")) {
+              // If user exists but password is wrong, show appropriate message
               toast.error("Invalid password for existing account");
             } else {
-              throw signUpError;
+              toast.error(signUpError.message);
             }
           } else {
             toast.success("Account created! Please check your email to verify your account.");
           }
         } else {
-          throw signInError;
+          toast.error(signInError.message);
         }
       } else if (signInData.user) {
         toast.success("Successfully logged in!");
