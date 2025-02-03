@@ -34,49 +34,42 @@ export const LoginForm = () => {
     }
 
     try {
-      // First check if user exists
-      const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers();
-      const userExists = users?.some(user => user.email === email);
+      // Try to sign in first
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (getUserError) {
-        toast.error("Error checking user existence");
-        return;
-      }
-
-      if (userExists) {
-        // Try to sign in if user exists
-        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (signInError) {
-          toast.error("Invalid password for existing account");
-          return;
-        }
-
-        if (signInData.user) {
-          toast.success("Successfully logged in!");
-          navigate("/");
-        }
-      } else {
-        // Try to sign up if user doesn't exist
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: email.split('@')[0],
+      if (signInError) {
+        // If sign in fails with invalid credentials, try to sign up
+        if (signInError.message.includes("Invalid login credentials")) {
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: email.split('@')[0],
+              },
             },
-          },
-        });
+          });
 
-        if (signUpError) {
-          toast.error(signUpError.message);
-          return;
+          if (signUpError) {
+            if (signUpError.message.includes("User already registered")) {
+              // If user exists but password is wrong, show appropriate message
+              toast.error("Invalid password for existing account");
+            } else {
+              toast.error(signUpError.message);
+            }
+            return;
+          }
+
+          toast.success("Account created! Please check your email to verify your account.");
+        } else {
+          toast.error(signInError.message);
         }
-
-        toast.success("Account created! Please check your email to verify your account.");
+      } else if (signInData.user) {
+        toast.success("Successfully logged in!");
+        navigate("/");
       }
     } catch (error: any) {
       console.error("Auth error:", error);
