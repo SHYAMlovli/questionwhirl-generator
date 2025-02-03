@@ -34,16 +34,40 @@ export const LoginForm = () => {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      // First, try to sign in
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
-      toast.success("Successfully logged in!");
-      navigate("/");
+      if (error) {
+        // If sign in fails, try to sign up the user
+        if (error.message.includes("Invalid login credentials")) {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: email.split('@')[0], // Basic profile data
+              },
+            },
+          });
+
+          if (signUpError) {
+            throw signUpError;
+          } else {
+            toast.success("Account created! Please check your email to verify your account.");
+          }
+        } else {
+          throw error;
+        }
+      } else if (data.user) {
+        toast.success("Successfully logged in!");
+        navigate("/");
+      }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      console.error("Auth error:", error);
+      toast.error(error.message || "An error occurred during authentication");
     } finally {
       setIsLoading(false);
     }
