@@ -6,7 +6,17 @@ const allowedUsers = [
   { email: "pavithranraja1729@gmail.com", password: "pavithran@qpgen" }
 ];
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   try {
     // Initialize Supabase client with service role key
     const supabaseClient = createClient(
@@ -36,12 +46,12 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ message: 'Users processed successfully' }),
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 400, headers: { 'Content-Type': 'application/json' } }
+      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })
