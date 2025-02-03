@@ -5,36 +5,43 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
+// Define allowed users
+const ALLOWED_USERS = [
+  { email: "rjrayan2548@gmail.com", password: "ranjan@qpgen" },
+  { email: "qpgen1127@gmail.com", password: "qpgen@qpgen" },
+  { email: "pavithranraja1729@gmail.com", password: "pavithran@qpgen" }
+];
+
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Check if the user is in the allowed list
+    const isAllowedUser = ALLOWED_USERS.some(
+      user => user.email === email && user.password === password
+    );
+
+    if (!isAllowedUser) {
+      toast.error("Invalid credentials or unauthorized access");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
-        toast.success("Check your email to confirm your account!");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-        toast.success("Successfully logged in!");
-        navigate("/");
-      }
+      if (error) throw error;
+      toast.success("Successfully logged in!");
+      navigate("/");
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
     } finally {
@@ -67,19 +74,8 @@ export const LoginForm = () => {
         />
       </div>
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Loading..." : isSignUp ? "Sign Up" : "Login"}
+        {isLoading ? "Loading..." : "Login"}
       </Button>
-      <p className="text-center text-sm text-gray-600">
-        {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-        <button
-          type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="text-primary hover:underline"
-          disabled={isLoading}
-        >
-          {isSignUp ? "Login" : "Sign Up"}
-        </button>
-      </p>
     </form>
   );
 };
