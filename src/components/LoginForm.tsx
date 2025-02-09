@@ -23,27 +23,27 @@ export const LoginForm = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Check if the user is in the allowed list
-    const isAllowedUser = ALLOWED_USERS.some(
-      user => user.email === email && user.password === password
-    );
-
-    if (!isAllowedUser) {
-      toast.error("Invalid credentials or unauthorized access");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Attempt to sign in
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // First check if user is in allowed list
+      const isAllowedUser = ALLOWED_USERS.some(
+        user => user.email === email && user.password === password
+      );
+
+      if (!isAllowedUser) {
+        toast.error("Invalid credentials or unauthorized access");
+        setIsLoading(false);
+        return;
+      }
+
+      // Try to sign in first
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        // If user doesn't exist, create account
-        if (error.message.includes("Invalid login credentials")) {
+      if (signInError) {
+        // If sign in fails with invalid credentials, try to sign up
+        if (signInError.message.includes("Invalid login credentials")) {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
             password,
@@ -56,9 +56,9 @@ export const LoginForm = () => {
 
           toast.success("Account created! Please check your email to verify your account.");
         } else {
-          toast.error(error.message);
+          toast.error(signInError.message);
         }
-      } else if (data.user) {
+      } else if (signInData.user) {
         toast.success("Successfully logged in!");
         navigate("/");
       }
