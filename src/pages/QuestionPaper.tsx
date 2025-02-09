@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { selectRandomQuestions } from "@/utils/questionSelection";
 import { FormData } from "@/types/form";
 import { TopicQuestion, QuestionFromDB, MappedQuestion, mapDBQuestionToTopicQuestion } from "@/types/question";
 import { generateQuestionPaperDoc } from "@/utils/docGenerator";
-import { findQuestionsBySubject } from "@/integrations/mongodb/client";
+import { supabase } from "@/integrations/supabase/client";
 
 const QuestionPaper = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -29,7 +30,7 @@ const QuestionPaper = () => {
 
   const addNewQuestion = () => {
     const newQuestion: TopicQuestion = {
-      id: String(Date.now()), // Convert to string
+      id: String(Date.now()),
       part: "",
       marks: "",
       kLevel: "",
@@ -81,7 +82,16 @@ const QuestionPaper = () => {
       console.log('Form data:', formData);
       console.log('Topic questions:', topicQuestions);
 
-      const questionsFromDB = await findQuestionsBySubject(formData.subject_code);
+      const { data: questionsFromDB, error } = await supabase
+        .from('questions')
+        .select('*')
+        .eq('subject_code', formData.subject_code);
+
+      if (error) {
+        console.error('Error fetching questions:', error);
+        toast.error("Failed to fetch questions");
+        return;
+      }
 
       if (!questionsFromDB || questionsFromDB.length === 0) {
         toast.error("No questions found for this subject");
@@ -90,9 +100,9 @@ const QuestionPaper = () => {
 
       console.log('Available questions from DB:', questionsFromDB);
 
-      // Type assertion to convert MongoDB documents to QuestionFromDB
+      // Transform Supabase questions to match QuestionFromDB type
       const questions = questionsFromDB.map(doc => ({
-        id: doc._id.toString(),
+        id: doc.id,
         user_id: doc.user_id,
         content: doc.content,
         marks: doc.marks,
