@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,40 +35,30 @@ export const LoginForm = () => {
     }
 
     try {
-      // Try to sign in first
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      // Attempt to sign in
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) {
-        // If sign in fails with invalid credentials, try to sign up
-        if (signInError.message.includes("Invalid login credentials")) {
+      if (error) {
+        // If user doesn't exist, create account
+        if (error.message.includes("Invalid login credentials")) {
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
             email,
             password,
-            options: {
-              data: {
-                full_name: email.split('@')[0],
-              },
-            },
           });
 
           if (signUpError) {
-            if (signUpError.message.includes("User already registered")) {
-              // If user exists but password is wrong, show appropriate message
-              toast.error("Invalid password for existing account");
-            } else {
-              toast.error(signUpError.message);
-            }
+            toast.error(signUpError.message);
             return;
           }
 
           toast.success("Account created! Please check your email to verify your account.");
         } else {
-          toast.error(signInError.message);
+          toast.error(error.message);
         }
-      } else if (signInData.user) {
+      } else if (data.user) {
         toast.success("Successfully logged in!");
         navigate("/");
       }
