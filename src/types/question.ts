@@ -1,3 +1,4 @@
+
 export interface TopicQuestion {
   id: string;
   content?: string;
@@ -40,13 +41,13 @@ export interface FormData {
 export interface MappedQuestion {
   id: string;
   content: string;
-  marks: string;
+  marks: number;
   kLevel: string;
   part: string;
   coLevel: string;
   hasOr: string;
   orContent?: string;
-  orMarks?: string;
+  orMarks?: number;
   orKLevel?: string;
   orPart?: string;
   orCoLevel?: string;
@@ -58,13 +59,13 @@ export const mapDBQuestionToTopicQuestion = (question: QuestionFromDB): MappedQu
   return {
     id: question.id,
     content: question.content,
-    marks: question.marks.toString(),
+    marks: question.marks,
     kLevel: question.k_level,
     part: question.part,
     coLevel: question.co_level,
     hasOr: hasOr ? "true" : "false",
     orContent: hasOr ? question.or_content : undefined,
-    orMarks: hasOr ? question.or_marks?.toString() : undefined,
+    orMarks: hasOr ? question.or_marks : undefined,
     orKLevel: hasOr ? question.or_k_level : undefined,
     orPart: hasOr ? question.or_part : undefined,
     orCoLevel: hasOr ? question.or_co_level : undefined,

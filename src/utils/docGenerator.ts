@@ -41,84 +41,84 @@ export const generateQuestionPaperDoc = (formData: FormData, selectedQuestions: 
 };
 
 const createQuestionsTable = (questions: MappedQuestion[]): Table => {
-  const rows = questions.map((question, index) => {
-    const cells = [
-      // Question number cell
-      new TableCell({
-        children: [new Paragraph({ text: `${index + 1}` })],
-        width: { size: 10, type: WidthType.PERCENTAGE },
-      }),
-      // Question content cell
-      new TableCell({
-        children: [new Paragraph({ text: question.content })],
-        width: { size: 60, type: WidthType.PERCENTAGE },
-      }),
-      // Marks cell
-      new TableCell({
-        children: [new Paragraph({ text: question.marks.toString() })],
-        width: { size: 10, type: WidthType.PERCENTAGE },
-      }),
-      // K-Level cell
-      new TableCell({
-        children: [new Paragraph({ text: `K${question.kLevel}` })],
-        width: { size: 10, type: WidthType.PERCENTAGE },
-      }),
-      // CO-Level cell
-      new TableCell({
-        children: [new Paragraph({ text: `CO${question.coLevel}` })],
-        width: { size: 10, type: WidthType.PERCENTAGE },
-      }),
-    ];
+  const rows: TableRow[] = [];
 
-    const row = new TableRow({ children: cells });
+  // Add header row
+  rows.push(
+    new TableRow({
+      children: [
+        new TableCell({ children: [new Paragraph({ text: "No." })] }),
+        new TableCell({ children: [new Paragraph({ text: "Question" })] }),
+        new TableCell({ children: [new Paragraph({ text: "Marks" })] }),
+        new TableCell({ children: [new Paragraph({ text: "K-Level" })] }),
+        new TableCell({ children: [new Paragraph({ text: "CO" })] }),
+      ],
+    })
+  );
 
-    // If there's an OR question, add it as a separate row
+  // Add question rows
+  questions.forEach((question, index) => {
+    // Main question row
+    rows.push(
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [new Paragraph({ text: `${index + 1}` })],
+            width: { size: 10, type: WidthType.PERCENTAGE },
+          }),
+          new TableCell({
+            children: [new Paragraph({ text: question.content })],
+            width: { size: 60, type: WidthType.PERCENTAGE },
+          }),
+          new TableCell({
+            children: [new Paragraph({ text: String(question.marks) })],
+            width: { size: 10, type: WidthType.PERCENTAGE },
+          }),
+          new TableCell({
+            children: [new Paragraph({ text: `K${question.kLevel}` })],
+            width: { size: 10, type: WidthType.PERCENTAGE },
+          }),
+          new TableCell({
+            children: [new Paragraph({ text: `CO${question.coLevel}` })],
+            width: { size: 10, type: WidthType.PERCENTAGE },
+          }),
+        ],
+      })
+    );
+
+    // Add OR question if it exists
     if (question.hasOr === "true" && question.orContent) {
-      const orCells = [
-        new TableCell({
-          children: [new Paragraph({ text: "OR" })],
-          width: { size: 10, type: WidthType.PERCENTAGE },
-        }),
-        new TableCell({
-          children: [new Paragraph({ text: question.orContent })],
-          width: { size: 60, type: WidthType.PERCENTAGE },
-        }),
-        new TableCell({
-          children: [new Paragraph({ text: (question.orMarks || question.marks).toString() })],
-          width: { size: 10, type: WidthType.PERCENTAGE },
-        }),
-        new TableCell({
-          children: [new Paragraph({ text: `K${question.orKLevel || question.kLevel}` })],
-          width: { size: 10, type: WidthType.PERCENTAGE },
-        }),
-        new TableCell({
-          children: [new Paragraph({ text: `CO${question.orCoLevel || question.coLevel}` })],
-          width: { size: 10, type: WidthType.PERCENTAGE },
-        }),
-      ];
-      return [row, new TableRow({ children: orCells })];
+      rows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              children: [new Paragraph({ text: "OR" })],
+              width: { size: 10, type: WidthType.PERCENTAGE },
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: question.orContent })],
+              width: { size: 60, type: WidthType.PERCENTAGE },
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: String(question.orMarks || question.marks) })],
+              width: { size: 10, type: WidthType.PERCENTAGE },
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: `K${question.orKLevel || question.kLevel}` })],
+              width: { size: 10, type: WidthType.PERCENTAGE },
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: `CO${question.orCoLevel || question.coLevel}` })],
+              width: { size: 10, type: WidthType.PERCENTAGE },
+            }),
+          ],
+        })
+      );
     }
-
-    return [row];
   });
-
-  // Flatten the array since some questions might have two rows (for OR questions)
-  const flattenedRows = rows.flat();
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: [
-      // Header row
-      new TableRow({
-        children: [
-          new TableCell({ children: [new Paragraph({ text: "No." })] }),
-          new TableCell({ children: [new Paragraph({ text: "Question" })] }),
-          new TableCell({ children: [new Paragraph({ text: "Marks" })] }),
-          new TableCell({ children: [new Paragraph({ text: "K-Level" })] }),
-          new TableCell({ children: [new Paragraph({ text: "CO" })] }),
-        ],
-      }),
-      ...flattenedRows,
-    ],
+    rows: rows,
   });
 };
