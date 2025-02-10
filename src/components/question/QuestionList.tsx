@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -9,8 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteQuestion } from "@/integrations/mongodb/client";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Question {
   id: string;
@@ -42,7 +43,11 @@ export const QuestionList = ({
 
   const deleteQuestionMutation = useMutation({
     mutationFn: async (id: string) => {
-      await deleteQuestion(id);
+      const { error } = await supabase
+        .from('questions')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
     },
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['questions'] });
