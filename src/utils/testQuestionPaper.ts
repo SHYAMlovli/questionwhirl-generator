@@ -1,3 +1,4 @@
+
 import { FormData } from "@/types/form";
 import { MappedQuestion } from "@/types/question";
 import { generateQuestionPaperDoc } from "./docGenerator";
@@ -18,7 +19,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q1",
     content: "Define Body area network.",
-    marks: "2",
+    marks: 2,
     kLevel: "1",
     coLevel: "CO3",
     part: "A",
@@ -27,7 +28,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q2",
     content: "State WBAN Security.",
-    marks: "2",
+    marks: 2,
     kLevel: "1",
     coLevel: "CO3",
     part: "A",
@@ -36,7 +37,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q3",
     content: "Discuss the role of IEEE 802.15.",
-    marks: "2",
+    marks: 2,
     kLevel: "1",
     coLevel: "CO3",
     part: "A",
@@ -45,7 +46,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q4",
     content: "Classify the types of communication in body sensor network.",
-    marks: "2",
+    marks: 2,
     kLevel: "2",
     coLevel: "CO3",
     part: "A",
@@ -54,7 +55,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q5",
     content: "Explain the various fields which are used in WBAN.",
-    marks: "2",
+    marks: 2,
     kLevel: "2",
     coLevel: "CO3",
     part: "A",
@@ -65,26 +66,26 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q6",
     content: "Explain about the technical challenges in BAN architecture design.",
-    marks: "12",
+    marks: 12,
     kLevel: "2",
     coLevel: "CO3",
     part: "B",
     hasOr: "true",
     orContent: "Discuss about the BAN Architecture and workflow with neat diagram.",
-    orMarks: "12",
+    orMarks: 12,
     orKLevel: "2",
     orCoLevel: "CO3",
   },
   {
     id: "q7",
     content: "Explain about the WBAN Standards and Technologies.",
-    marks: "12",
+    marks: 12,
     kLevel: "2",
     coLevel: "CO3",
     part: "B",
     hasOr: "true",
     orContent: "Discuss about the wireless communication technologies for wearable systems.",
-    orMarks: "12",
+    orMarks: 12,
     orKLevel: "2",
     orCoLevel: "CO3",
   },
@@ -93,13 +94,13 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q8",
     content: "Describe in detail about the system security and reliability for wearable technology.",
-    marks: "16",
+    marks: 16,
     kLevel: "2",
     coLevel: "CO3",
     part: "C",
     hasOr: "true",
     orContent: "Explain about the security issues in WBAN network.",
-    orMarks: "16",
+    orMarks: 16,
     orKLevel: "2",
     orCoLevel: "CO3",
   },
