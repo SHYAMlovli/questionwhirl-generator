@@ -1,9 +1,10 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FormFields } from "./FormFields";
 import { useQueryClient } from "@tanstack/react-query";
-import { insertQuestion, updateQuestion } from "@/integrations/mongodb/client";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QuestionFormProps {
   initialData?: {
@@ -47,6 +48,14 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
     setIsSubmitting(true);
 
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error("No authenticated user found");
+      }
+
       const questionData = {
         content,
         marks: parseInt(mark),
@@ -60,16 +69,26 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
         or_marks: hasOr && orMark ? parseInt(orMark) : null,
         or_k_level: hasOr ? orKLevel : null,
         or_part: hasOr ? orPart : null,
-        or_co_level: hasOr ? orCoLevel : null
+        or_co_level: hasOr ? orCoLevel : null,
+        user_id: user.id,
       };
 
       if (initialData?.id) {
         // Update existing question
-        await updateQuestion(initialData.id, questionData);
+        const { error } = await supabase
+          .from('questions')
+          .update(questionData)
+          .eq('id', initialData.id);
+
+        if (error) throw error;
         toast.success("Question updated successfully");
       } else {
         // Create new question
-        await insertQuestion(questionData);
+        const { error } = await supabase
+          .from('questions')
+          .insert(questionData);
+
+        if (error) throw error;
         toast.success("Question added successfully");
       }
 
