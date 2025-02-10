@@ -55,7 +55,7 @@ const createQuestionsTable = (questions: MappedQuestion[]): Table => {
       }),
       // Marks cell
       new TableCell({
-        children: [new Paragraph({ text: question.marks })],
+        children: [new Paragraph({ text: question.marks.toString() })],
         width: { size: 10, type: WidthType.PERCENTAGE },
       }),
       // K-Level cell
@@ -84,7 +84,7 @@ const createQuestionsTable = (questions: MappedQuestion[]): Table => {
           width: { size: 60, type: WidthType.PERCENTAGE },
         }),
         new TableCell({
-          children: [new Paragraph({ text: question.orMarks || question.marks })],
+          children: [new Paragraph({ text: (question.orMarks || question.marks).toString() })],
           width: { size: 10, type: WidthType.PERCENTAGE },
         }),
         new TableCell({
