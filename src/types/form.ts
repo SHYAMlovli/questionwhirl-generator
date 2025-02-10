@@ -1,3 +1,4 @@
+
 export interface FormData {
   department: string[];
   year: string[];
@@ -8,3 +9,4 @@ export interface FormData {
   duration: string;
   date: string[];
 }
+
