@@ -127,6 +127,7 @@ export type Database = {
           or_marks: number | null
           or_part: string | null
           part: string
+          spreadsheet_url: string | null
           subject_code: string | null
           subject_name: string | null
           user_id: string
@@ -147,6 +148,7 @@ export type Database = {
           or_marks?: number | null
           or_part?: string | null
           part: string
+          spreadsheet_url?: string | null
           subject_code?: string | null
           subject_name?: string | null
           user_id: string
@@ -167,6 +169,7 @@ export type Database = {
           or_marks?: number | null
           or_part?: string | null
           part?: string
+          spreadsheet_url?: string | null
           subject_code?: string | null
           subject_name?: string | null
           user_id?: string
