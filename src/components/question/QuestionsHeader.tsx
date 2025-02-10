@@ -1,9 +1,9 @@
+
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SubjectCard } from "./SubjectCard";
-import { migrateDataToMongoDB } from "@/utils/migrationUtil";
 import { toast } from "sonner";
 import { QuestionFromDB } from "@/types/question";
 
@@ -31,15 +31,6 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
     },
   });
 
-  const handleMigration = async () => {
-    try {
-      const result = await migrateDataToMongoDB();
-      toast.success(`Successfully migrated ${result.count} questions to MongoDB`);
-    } catch (error) {
-      toast.error("Failed to migrate data to MongoDB");
-    }
-  };
-
   // Group questions by subject with proper typing
   const subjects = questions?.reduce<Record<string, Subject>>((acc, question) => {
     if (question.subject_code && question.subject_name) {
@@ -61,9 +52,6 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Question Banks</h1>
         <div className="flex gap-4">
-          <Button variant="outline" onClick={handleMigration}>
-            Sync to MongoDB
-          </Button>
           <Button onClick={onAddSubject}>
             <Plus className="h-4 w-4 mr-2" />
             Add Subject
