@@ -27,7 +27,13 @@ export const QuestionsHeader = ({ onAddSubject, onSelectSubject }: QuestionsHead
         .select('*')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data as QuestionFromDB[];
+      // Use type assertion after validation
+      const validatedData = data?.map(item => ({
+        ...item,
+        content: typeof item.content === 'object' ? item.content : { text: '', type: 'text' },
+        or_content: typeof item.or_content === 'object' ? item.or_content : undefined
+      })) as QuestionFromDB[];
+      return validatedData;
     },
   });
 

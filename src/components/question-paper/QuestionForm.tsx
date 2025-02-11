@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { FormFields } from "@/components/question/FormFields";
 import { CheckedState } from "@radix-ui/react-checkbox";
@@ -39,6 +40,8 @@ export const QuestionForm = ({
         <FormFields
           content={question.content || ""}
           setContent={(value) => updateQuestion(question.id, "content", value)}
+          contentType={question.contentType || "text"}
+          setContentType={(value) => updateQuestion(question.id, "contentType", value)}
           mark={question.marks || ""}
           setMark={(value) => updateQuestion(question.id, "marks", value)}
           kLevel={question.kLevel || ""}
@@ -47,11 +50,15 @@ export const QuestionForm = ({
           setPart={(value) => updateQuestion(question.id, "part", value)}
           coLevel={question.coLevel || ""}
           setCoLevel={(value) => updateQuestion(question.id, "coLevel", value)}
+          hasFormula={question.hasFormula || false}
+          setHasFormula={(value) => updateQuestion(question.id, "hasFormula", value.toString())}
           hasOr={question.hasOr === "true"}
           setHasOr={handleOrChange}
           orContent={question.orContent || ""}
           setOrContent={(value) => updateQuestion(question.id, "orContent", value)}
-          orMark={question.orMarks || ""}
+          orContentType={question.orContentType || "text"}
+          setOrContentType={(value) => updateQuestion(question.id, "orContentType", value)}
+          orMark={question.orMarks?.toString() || ""}
           setOrMark={(value) => updateQuestion(question.id, "orMarks", value)}
           orKLevel={question.orKLevel || ""}
           setOrKLevel={(value) => updateQuestion(question.id, "orKLevel", value)}
@@ -59,6 +66,8 @@ export const QuestionForm = ({
           setOrPart={(value) => updateQuestion(question.id, "orPart", value)}
           orCoLevel={question.orCoLevel || ""}
           setOrCoLevel={(value) => updateQuestion(question.id, "orCoLevel", value)}
+          orHasFormula={question.orHasFormula || false}
+          setOrHasFormula={(value) => updateQuestion(question.id, "orHasFormula", value.toString())}
         />
       </div>
     </div>
