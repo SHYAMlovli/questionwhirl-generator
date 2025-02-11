@@ -116,7 +116,6 @@ export type Database = {
           content: string
           content_type: string | null
           created_at: string | null
-          has_formula: boolean | null
           has_or: boolean | null
           id: string
           image_url: string | null
@@ -141,7 +140,6 @@ export type Database = {
           content: string
           content_type?: string | null
           created_at?: string | null
-          has_formula?: boolean | null
           has_or?: boolean | null
           id?: string
           image_url?: string | null
@@ -166,7 +164,6 @@ export type Database = {
           content?: string
           content_type?: string | null
           created_at?: string | null
-          has_formula?: boolean | null
           has_or?: boolean | null
           id?: string
           image_url?: string | null
