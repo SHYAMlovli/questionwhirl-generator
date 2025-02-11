@@ -21,8 +21,11 @@ export interface TopicQuestion {
 export interface QuestionFromDB {
   id: string;
   user_id: string;
-  content: string;
-  content_type: string;
+  content: {
+    text: string;
+    type: string;
+    formula?: string;
+  };
   marks: number;
   k_level: string;
   part: string;
@@ -32,8 +35,11 @@ export interface QuestionFromDB {
   subject_name: string | null;
   has_or?: boolean;
   has_formula?: boolean;
-  or_content?: string;
-  or_content_type?: string;
+  or_content?: {
+    text: string;
+    type: string;
+    formula?: string;
+  };
   or_marks?: number;
   or_k_level?: string;
   or_part?: string;
@@ -70,16 +76,16 @@ export const mapDBQuestionToTopicQuestion = (question: QuestionFromDB): MappedQu
   
   return {
     id: question.id,
-    content: question.content,
-    contentType: question.content_type || 'text',
+    content: question.content.text,
+    contentType: question.content.type || 'text',
     marks: question.marks,
     kLevel: question.k_level,
     part: question.part,
     coLevel: question.co_level,
     hasOr: hasOr ? "true" : "false",
     hasFormula: question.has_formula,
-    orContent: hasOr ? question.or_content : undefined,
-    orContentType: hasOr ? question.or_content_type : undefined,
+    orContent: hasOr ? question.or_content?.text : undefined,
+    orContentType: hasOr ? question.or_content?.type : undefined,
     orMarks: hasOr ? question.or_marks : undefined,
     orKLevel: hasOr ? question.or_k_level : undefined,
     orPart: hasOr ? question.or_part : undefined,
@@ -87,4 +93,3 @@ export const mapDBQuestionToTopicQuestion = (question: QuestionFromDB): MappedQu
     orHasFormula: hasOr ? question.or_has_formula : undefined,
   };
 };
-

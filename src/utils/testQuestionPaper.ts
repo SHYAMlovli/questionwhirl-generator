@@ -19,6 +19,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q1",
     content: "Define Body area network.",
+    contentType: "text",
     marks: 2,
     kLevel: "1",
     coLevel: "CO3",
@@ -28,6 +29,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q2",
     content: "State WBAN Security.",
+    contentType: "text",
     marks: 2,
     kLevel: "1",
     coLevel: "CO3",
@@ -37,6 +39,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q3",
     content: "Discuss the role of IEEE 802.15.",
+    contentType: "text",
     marks: 2,
     kLevel: "1",
     coLevel: "CO3",
@@ -46,6 +49,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q4",
     content: "Classify the types of communication in body sensor network.",
+    contentType: "text",
     marks: 2,
     kLevel: "2",
     coLevel: "CO3",
@@ -55,6 +59,7 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q5",
     content: "Explain the various fields which are used in WBAN.",
+    contentType: "text",
     marks: 2,
     kLevel: "2",
     coLevel: "CO3",
@@ -66,12 +71,14 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q6",
     content: "Explain about the technical challenges in BAN architecture design.",
+    contentType: "text",
     marks: 12,
     kLevel: "2",
     coLevel: "CO3",
     part: "B",
     hasOr: "true",
     orContent: "Discuss about the BAN Architecture and workflow with neat diagram.",
+    orContentType: "text",
     orMarks: 12,
     orKLevel: "2",
     orCoLevel: "CO3",
@@ -79,12 +86,14 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q7",
     content: "Explain about the WBAN Standards and Technologies.",
+    contentType: "text",
     marks: 12,
     kLevel: "2",
     coLevel: "CO3",
     part: "B",
     hasOr: "true",
     orContent: "Discuss about the wireless communication technologies for wearable systems.",
+    orContentType: "text",
     orMarks: 12,
     orKLevel: "2",
     orCoLevel: "CO3",
@@ -94,12 +103,14 @@ const sampleQuestions: MappedQuestion[] = [
   {
     id: "q8",
     content: "Describe in detail about the system security and reliability for wearable technology.",
+    contentType: "text",
     marks: 16,
     kLevel: "2",
     coLevel: "CO3",
     part: "C",
     hasOr: "true",
     orContent: "Explain about the security issues in WBAN network.",
+    orContentType: "text",
     orMarks: 16,
     orKLevel: "2",
     orCoLevel: "CO3",
@@ -110,4 +121,3 @@ export const generateSampleQuestionPaper = () => {
   const doc = generateQuestionPaperDoc(sampleFormData, sampleQuestions);
   return doc;
 };
-
