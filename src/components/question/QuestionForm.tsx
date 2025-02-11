@@ -9,8 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 interface QuestionFormProps {
   initialData?: {
     id: string;
-    content: string;
-    content_type: string;
+    content: {
+      text: string;
+      type: string;
+      formula?: string;
+    };
     marks: number;
     k_level: string;
     part: string;
@@ -18,16 +21,19 @@ interface QuestionFormProps {
     has_formula?: boolean;
     subject_code?: string;
     subject_name?: string;
-    or_content_type?: string;
-    or_has_formula?: boolean;
+    or_content?: {
+      text: string;
+      type: string;
+      formula?: string;
+    };
   };
   onSuccess: () => void;
   onCancel: () => void;
 }
 
 export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormProps) => {
-  const [content, setContent] = useState(initialData?.content || "");
-  const [contentType, setContentType] = useState(initialData?.content_type || "text");
+  const [content, setContent] = useState(initialData?.content?.text || "");
+  const [contentType, setContentType] = useState(initialData?.content?.type || "text");
   const [mark, setMark] = useState(initialData?.marks.toString() || "");
   const [kLevel, setKLevel] = useState(initialData?.k_level || "");
   const [part, setPart] = useState(initialData?.part || "");
@@ -35,9 +41,9 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
   const [hasFormula, setHasFormula] = useState(initialData?.has_formula || false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const queryClient = useQueryClient();
-  const [hasOr, setHasOr] = useState(false);
-  const [orContent, setOrContent] = useState("");
-  const [orContentType, setOrContentType] = useState("text");
+  const [hasOr, setHasOr] = useState(!!initialData?.or_content);
+  const [orContent, setOrContent] = useState(initialData?.or_content?.text || "");
+  const [orContentType, setOrContentType] = useState(initialData?.or_content?.type || "text");
   const [orMark, setOrMark] = useState("");
   const [orKLevel, setOrKLevel] = useState("");
   const [orPart, setOrPart] = useState("");
@@ -65,8 +71,11 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
       }
 
       const questionData = {
-        content,
-        content_type: contentType,
+        content: {
+          text: content,
+          type: contentType,
+          formula: contentType === 'math' ? content : null
+        },
         marks: parseInt(mark),
         k_level: kLevel,
         part,
@@ -75,13 +84,11 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
         subject_code: initialData?.subject_code,
         subject_name: initialData?.subject_name,
         has_or: hasOr,
-        or_content: hasOr ? orContent : null,
-        or_content_type: hasOr ? orContentType : null,
-        or_marks: hasOr && orMark ? parseInt(orMark) : null,
-        or_k_level: hasOr ? orKLevel : null,
-        or_part: hasOr ? orPart : null,
-        or_co_level: hasOr ? orCoLevel : null,
-        or_has_formula: hasOr ? orHasFormula : null,
+        or_content: hasOr ? {
+          text: orContent,
+          type: orContentType,
+          formula: orContentType === 'math' ? orContent : null
+        } : null,
         user_id: user.id,
       };
 
@@ -166,4 +173,3 @@ export const QuestionForm = ({ initialData, onSuccess, onCancel }: QuestionFormP
     </form>
   );
 };
-

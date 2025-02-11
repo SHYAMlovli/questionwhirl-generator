@@ -113,8 +113,7 @@ export type Database = {
       questions: {
         Row: {
           co_level: string
-          content: string
-          content_type: string | null
+          content: Json | null
           created_at: string | null
           has_or: boolean | null
           id: string
@@ -122,8 +121,7 @@ export type Database = {
           k_level: string
           marks: number
           or_co_level: string | null
-          or_content: string | null
-          or_content_type: string | null
+          or_content: Json | null
           or_has_formula: boolean | null
           or_image_url: string | null
           or_k_level: string | null
@@ -137,8 +135,7 @@ export type Database = {
         }
         Insert: {
           co_level?: string
-          content: string
-          content_type?: string | null
+          content?: Json | null
           created_at?: string | null
           has_or?: boolean | null
           id?: string
@@ -146,8 +143,7 @@ export type Database = {
           k_level: string
           marks: number
           or_co_level?: string | null
-          or_content?: string | null
-          or_content_type?: string | null
+          or_content?: Json | null
           or_has_formula?: boolean | null
           or_image_url?: string | null
           or_k_level?: string | null
@@ -161,8 +157,7 @@ export type Database = {
         }
         Update: {
           co_level?: string
-          content?: string
-          content_type?: string | null
+          content?: Json | null
           created_at?: string | null
           has_or?: boolean | null
           id?: string
@@ -170,8 +165,7 @@ export type Database = {
           k_level?: string
           marks?: number
           or_co_level?: string | null
-          or_content?: string | null
-          or_content_type?: string | null
+          or_content?: Json | null
           or_has_formula?: boolean | null
           or_image_url?: string | null
           or_k_level?: string | null

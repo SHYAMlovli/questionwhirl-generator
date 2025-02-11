@@ -12,10 +12,15 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ContentRenderer } from "./ContentRenderer";
 
 interface Question {
   id: string;
-  content: string;
+  content: {
+    text: string;
+    type: string;
+    formula?: string;
+  };
   marks: number;
   k_level: string;
   part: string;
@@ -68,7 +73,7 @@ export const QuestionList = ({
   const filteredQuestions = questions?.filter(q => {
     const searchLower = searchQuery.toLowerCase();
     return (
-      q.content?.toLowerCase().includes(searchLower) ||
+      q.content.text?.toLowerCase().includes(searchLower) ||
       q.subject_code?.toLowerCase().includes(searchLower) ||
       q.subject_name?.toLowerCase().includes(searchLower) ||
       q.k_level?.toLowerCase().includes(searchLower) ||
@@ -120,7 +125,12 @@ export const QuestionList = ({
                     <TableCell>{question.subject_name}</TableCell>
                   </>
                 )}
-                <TableCell className="font-medium">{question.content}</TableCell>
+                <TableCell className="font-medium">
+                  <ContentRenderer 
+                    content={question.content.text} 
+                    contentType={question.content.type} 
+                  />
+                </TableCell>
                 <TableCell>{question.marks}</TableCell>
                 <TableCell>{question.part}</TableCell>
                 <TableCell>{question.k_level}</TableCell>
